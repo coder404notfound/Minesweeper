@@ -371,12 +371,12 @@
             function rightClicked(boxID){
                 boxID=parseInt(boxID);
                 if (flagsPosition.includes(boxID)){
-                    document.getElementById(boxID).firstChild.src='default.png';
+                    document.getElementById(boxID).firstChild.src='/default.png';
                     var ind=flagsPosition.indexOf(boxID);
                     flagsPosition.splice(ind, 1);
                 }
                 else {
-                    document.getElementById(boxID).firstChild.src='flag.png';
+                    document.getElementById(boxID).firstChild.src='/flag.png';
                     flagsPosition.push(boxID);
                 }
             }
