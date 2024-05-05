@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+    <style>
+        *{
+            margin: 0%;
+            padding: 0%;
+        }
+        html{
+            height: 100%;
+            width: 100%;
+        }
+        body{
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #gameBox{
+            height: 60%;
+            width: 40%;
+            border: 2px solid black;
+        }
+        .rows{
+            height: 10%;
+            width: 100%;
+            margin: 0%;
+        }
+        .boxes{
+            display: inline-flex;
+            height: 100%;
+            width: 10%;
+        }
+        img{
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameBox">
+        
+        
+        
+        
+    </div>
+    <script>
+            document.addEventListener('contextmenu', event => event.preventDefault());
+            var i=0;
+            var c=0;
+            while (i<10){
+                var j=0;
+                gameBox=document.getElementById('gameBox');
+                gameBox.innerHTML=gameBox.innerHTML+"<div class='rows' id='row-"+i+"'></div>";
+                while (j<10){
+                    gameRow=document.getElementById('row-'+i);
+                    gameRow.innerHTML=gameRow.innerHTML+"<span class='boxes' id='"+c+"' onclick='return leftClicked(id)' oncontextmenu='return rightClicked(id)'><img src='/default.png' alt='' srcset=''></span>";
+                    j=j+1;
+                    c=c+1;
+                }
+                i=i+1;
+            }
+
+            var flagsCount=10;
+            var flagsUsed=0;
+            var flagsPosition=[];
+
+
+            var minesCount=10;
+            i=0;
+            // var minesPosition=[36, 27, 57, 64, 95, 87, 6, 70, 40, 47];
+            var minesPosition=[];
+            while (i<minesCount){
+                var rand=Math.floor(Math.random()*100);
+                if (!minesPosition.includes(rand)){
+                    minesPosition[i]=rand;
+                    i=i+1;
+                }
+            }
+
+            console.log(minesPosition);
+            
+            var positionTopLeft=[];
+            var positionTopRight=[];
+            var positionBottomLeft=[];
+            var positionBottomRight=[];
+            var positionTop=[];
+            var positionBottom=[];
+            var positionLeft=[];
+            var positionRight=[];
+            var positionMid=[];
+            for (var i=0; i<=99; i++){
+                if (i==0){
+                    positionTopLeft.push(i);
+                }
+                else if (i==9){
+                    positionTopRight.push(i);
+                }
+                else if (i==90){
+                    positionBottomLeft.push(i);
+                }
+                else if (i==99){
+                    positionBottomRight.push(i);
+                }
+                else if (i%10==0){
+                    positionLeft.push(i);
+                }
+                else if (i%10==9){
+                    positionRight.push(i);
+                }
+                else if (i>=1 && i<=8){
+                    positionTop.push(i);
+                }
+                else if (i>=91 && i<=98){
+                    positionBottom.push(i);
+                }
+                else{
+                    positionMid.push(i);
+                }
+            }
+            // console.log(positionLeft);
+            // console.log(positionRight);
+            // console.log(positionTop);
+            // console.log(positionBottom);
+            // console.log(positionTopLeft);
+            // console.log(positionTopRight);
+            // console.log(positionBottomLeft);
+            // console.log(positionBottomRight);
+            // console.log(positionMid);
+            
+            var neighbourMinesCount={};
+            for (var i=0; i<=99; i++){
+                neighbourMinesCount[i]=0;
+            }
+            console.log(neighbourMinesCount);
+            for(var i=0; i<=99; i++){
+                if (!minesPosition.includes(i)){
+                    if (positionTopLeft.includes(i)){
+                        if (minesPosition.includes(i+1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+1+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                    if (positionTopRight.includes(i)){
+                        if (minesPosition.includes(i-1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                    if (positionBottomLeft.includes(i)){
+                        if (minesPosition.includes(i+1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+1-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                    if (positionBottomRight.includes(i)){
+                        if (minesPosition.includes(i-1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                    if (positionLeft.includes(i)){
+                        if (minesPosition.includes(i+1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+1+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+1-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                    if (positionRight.includes(i)){
+                        if (minesPosition.includes(i-1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                    if (positionTop.includes(i)){
+                        if (minesPosition.includes(i+1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+1+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                    if (positionBottom.includes(i)){
+                        if (minesPosition.includes(i+1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+1-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                    if (positionMid.includes(i)){
+                        if (minesPosition.includes(i+1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+1+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i+1-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1+10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                        if (minesPosition.includes(i-1-10)){
+                            neighbourMinesCount[i]=neighbourMinesCount[i]+1;
+                        }
+                    }
+                }
+            }
+
+            var emptyPosition=[];
+
+            for (var i=0; i<=99; i++){
+                if ((!minesPosition.includes(i)) && (neighbourMinesCount[i]==0)){
+                    emptyPosition.push(i);
+                }
+            }
+            
+            console.log(minesPosition);
+            console.log(neighbourMinesCount);
+            console.log(emptyPosition);
+            
+            var gameOver=0;
+            
+            function revealAll(i){
+                if (flagsPosition.includes(i)){
+                    alert('flag');
+                    document.getElementById(i).firstChild.src='/default.png';
+                }
+                if (minesPosition.includes(i)){
+                    document.getElementById(i).firstChild.src='/mine.png';
+                }
+                else if (neighbourMinesCount[i]!=0){
+                    document.getElementById(i).firstChild.src='/empty'+neighbourMinesCount[i]+'.png';
+                }
+                else{
+                    document.getElementById(i).firstChild.src='/empty'+0+'.png';
+                }
+            }
+            
+            function gameOverLost(){
+                for (var i=0; i<=99; i++){
+                    revealAll(i);
+                }
+            }
+            
+            positionAll=[];
+
+            function emptyNeighborsReveal(boxId){
+                for(var i=boxId; i>=Math.floor(boxId/10)*10; i--){
+                    if(minesPosition.includes(i)){
+                        break;
+                    }
+                    if(emptyPosition.includes(i)){
+                        document.getElementById(i).firstChild.src='/empty0.png';
+                    }
+                    if(neighbourMinesCount[i]!=0){
+                        document.getElementById(i).firstChild.src='/empty'+neighbourMinesCount[i]+'.png';
+                        break;
+                    }
+                }
+                for(var i=boxId; i<Math.floor(boxId/10)*10+10; i++){
+                    if(minesPosition.includes(i)){
+                        break;
+                    }
+                    if(emptyPosition.includes(i)){
+                        document.getElementById(i).firstChild.src='/empty0.png';
+                    }
+                    if(neighbourMinesCount[i]!=0){
+                        document.getElementById(i).firstChild.src='/empty'+neighbourMinesCount[i]+'.png';
+                        break;
+                    }
+                }
+            }
+            function leftClicked(boxID){
+                boxID=parseInt(boxID);
+                if (flagsPosition.includes(boxID)){
+                    return;
+                }
+                else {                   
+                    if (minesPosition.includes(boxID)){
+                        document.getElementById(boxID).firstChild.src='/mine.png';
+                        gameOver=1;
+                        gameOverLost();
+                    }
+                    else if(neighbourMinesCount[boxID]!=0){
+                        document.getElementById(boxID).firstChild.src='/empty'+neighbourMinesCount[boxID]+'.png';
+                    }
+                    
+                    else {
+                        emptyNeighborsReveal(boxID);
+                    }
+
+                }
+            }
+            
+
+            function rightClicked(boxID){
+                boxID=parseInt(boxID);
+                if (flagsPosition.includes(boxID)){
+                    document.getElementById(boxID).firstChild.src='/default.png';
+                    var ind=flagsPosition.indexOf(boxID);
+                    flagsPosition.splice(ind, 1);
+                }
+                else {
+                    document.getElementById(boxID).firstChild.src='/flag.png';
+                    flagsPosition.push(boxID);
+                }
+            }
+    </script>
+    </body>
+</html>
